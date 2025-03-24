@@ -1,0 +1,87 @@
+use strict;
+use warnings;
+use feature 'say';
+
+my $filename = "tasks.txt";
+my @tasks = load_tasks();
+
+while (1) {
+    print "\nChoose an option: (add/list/remove/exit): ";
+    chomp(my $choice = <STDIN>);
+    $choice = lc $choice;
+
+    if ($choice eq 'add') {
+        print "Enter task: ";
+        chomp(my $task_name = <STDIN>);
+        add_task($task_name);
+    } 
+    elsif ($choice eq 'list') {
+        list_tasks();
+    } 
+    elsif ($choice eq 'remove') {
+        print "Enter task ID to remove: ";
+        chomp(my $task_id = <STDIN>);
+        remove_task($task_id);
+    } 
+    elsif ($choice eq 'exit') {
+        say "Exiting...";
+        last;
+    } 
+    else {
+        say "Invalid command.";
+    }
+}
+
+sub load_tasks {
+    open my $fh, '<', $filename or return ();
+    my @lines = <$fh>;
+    close $fh;
+    return @lines;
+}
+
+sub save_tasks {
+    open my $fh, '>', $filename or die "Cannot write to $filename: $!";
+    print $fh @tasks;
+    close $fh;
+}
+
+sub add_task {
+    my ($task_name) = @_;
+    my $id = @tasks + 1;
+    push @tasks, "$id. $task_name\n";
+    save_tasks();
+    say "Task added: $task_name";
+}
+
+sub list_tasks {
+    if (!@tasks) {
+        say "No tasks available.";
+        return;
+    }
+    say "To-Do List:";
+    print @tasks;
+}
+
+sub remove_task {
+    my ($task_id) = @_;
+    my @new_tasks;
+    my $found = 0;
+
+    foreach my $task (@tasks) {
+        if ($task =~ /^(\d+)\.\s(.*)/) {
+            if ($1 == $task_id) {
+                say "Task removed: $2";
+                $found = 1;
+                next;
+            }
+            push @new_tasks, "$task";
+        }
+    }
+
+    if ($found) {
+        @tasks = @new_tasks;
+        save_tasks();
+    } else {
+        say "Task not found.";
+    }
+}
