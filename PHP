@@ -1,0 +1,50 @@
+<?php
+
+$notes = [];
+
+function displayMenu() {
+    echo "---  useful Notepad ---\n";
+    echo "1. Add Note\n";
+    echo "2. Show Notes\n";
+    echo "3. Clear All Notes\n";
+    echo "4. Exit\n";
+    echo "Please choose an option: ";
+}
+
+while (true) {
+    displayMenu();
+    $choice = trim(fgets(STDIN));
+
+    switch ($choice) {
+        case 1:
+            echo "Enter your note: ";
+            $note = trim(fgets(STDIN));
+            $notes[] = $note;
+            echo "Note added!\n";
+            break;
+
+        case 2:
+            echo "Your Notes:\n";
+            if (empty($notes)) {
+                echo "No notes to display.\n";
+            } else {
+                foreach ($notes as $index => $note) {
+                    echo ($index + 1) . ". " . $note . "\n";
+                }
+            }
+            break;
+
+        case 3:
+            $notes = [];
+            echo "All notes cleared!\n";
+            break;
+
+        case 4:
+            echo "Goodbye!\n";
+            exit;
+
+        default:
+            echo "Invalid option. Please try again.\n";
+    }
+}
+?>
