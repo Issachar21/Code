@@ -1,0 +1,87 @@
+import re
+
+# Token specification (Patterns for different token types)
+token_specification = [
+    ('NUMBER',   r'\d+(\.\d*)?'),    
+    ('IDENT',    r'[A-Za-z_]\w*'),   
+    ('OP',       r'[+\-*/=]'),       
+    ('SKIP',     r'[ \t]+'),       
+    ('NEWLINE',  r'\n'),            
+    ('ERROR',    r'.')               
+]
+
+def lexer(text):
+    tokens = []
+    token_regex = '|'.join(f'(?P<{name}>{pattern})' for name, pattern in token_specification)
+    
+    for match in re.finditer(token_regex, text):
+        kind = match.lastgroup
+        value = match.group(kind)
+        if kind == 'SKIP':
+            continue  # Ignore whitespace
+        elif kind == 'ERROR':
+            raise SyntaxError(f"Unexpected character: {value}")
+        tokens.append((kind, value))
+    
+    return tokens
+
+# Example input code
+code = "x = 10 + 5 * y"
+tokens = lexer(code)
+
+# Print tokens
+for token in tokens:
+    print(token)
+
+
+
+
+
+class Parser:
+    def __init__(self, tokens):
+        self.tokens = tokens
+        self.pos = 0
+    
+    def eat(self, token_type):
+        if self.pos < len(self.tokens) and self.tokens[self.pos][0] == token_type:
+            self.pos += 1
+        else:
+            raise SyntaxError(f"Unexpected token {self.tokens[self.pos]}")
+
+    def factor(self):  # Handles numbers and identifiers
+        token = self.tokens[self.pos]
+        if token[0] == 'NUMBER':
+            self.eat('NUMBER')
+            return f"Number({token[1]})"
+        elif token[0] == 'IDENT':
+            self.eat('IDENT')
+            return f"Variable({token[1]})"
+        else:
+            raise SyntaxError("Expected number or variable")
+
+    def term(self):  
+        node = self.factor()
+        while self.pos < len(self.tokens) and self.tokens[self.pos][1] in ('*', '/'):
+            op = self.tokens[self.pos]
+            self.eat('OP')
+            right = self.factor()
+            node = f"({node} {op[1]} {right})"
+        return node
+
+    def expr(self): 
+        node = self.term()
+        while self.pos < len(self.tokens) and self.tokens[self.pos][1] in ('+', '-'):
+            op = self.tokens[self.pos]
+            self.eat('OP')
+            right = self.term()
+            node = f"({node} {op[1]} {right})"
+        return node
+
+    def parse(self):
+        return self.expr()
+
+
+parser = Parser(tokens)
+parse_tree = parser.parse()
+print(parse_tree)
+
