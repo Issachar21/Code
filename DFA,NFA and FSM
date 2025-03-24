@@ -1,0 +1,73 @@
+DFA
+
+def dfa_accepts_01(string):
+    state = 0  
+    
+    for char in string:
+        if state == 0 and char == '0':
+            state = 0
+        elif state == 0 and char == '1':
+            state = 1
+        elif state == 1 and char == '0':
+            state = 2
+        elif state == 1 and char == '1':
+            state = 1
+        elif state == 2:
+            state = 0 if char == '0' else 1
+
+    return state == 2  
+
+
+print(dfa_accepts_01("11001"))  
+print(dfa_accepts_01("10010"))  
+
+
+
+NFA
+
+def nfa_accepts_01_or_10(string):
+    states = {0}  
+    
+    for char in string:
+        new_states = set()
+        for state in states:
+            if state == 0 and char == '0':
+                new_states |= {1} 
+            if state == 0 and char == '1':
+                new_states |= {3} 
+            if state == 1 and char == '1':
+                new_states |= {2}  
+            if state == 3 and char == '0':
+                new_states |= {4}  
+            if state == 4 and char == '1':
+                new_states |= {2}  
+
+        states = new_states
+
+    return 2 in states  
+
+
+print(nfa_accepts_01_or_10("1101"))  # True
+print(nfa_accepts_01_or_10("0000"))  # False
+
+FSM
+
+class TurnstileFSM:
+    def __init__(self):
+        self.state = "Locked"
+
+    def insert_coin(self):
+        if self.state == "Locked":
+            self.state = "Unlocked"
+            print("Turnstile unlocked!")
+
+    def push(self):
+        if self.state == "Unlocked":
+            self.state = "Locked"
+            print("Turnstile locked!")
+
+
+turnstile = TurnstileFSM()
+turnstile.insert_coin() 
+turnstile.push()         
+
