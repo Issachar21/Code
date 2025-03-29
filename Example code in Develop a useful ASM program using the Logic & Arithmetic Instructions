@@ -1,0 +1,74 @@
+section .data
+    num1 db 10          ; First number
+    num2 db 3           ; Second number
+    result db 0         ; To store results
+    even_msg db " is even", 0
+    odd_msg db " is odd", 0
+    add_msg db "Addition: ", 0
+    sub_msg db "Subtraction: ", 0
+    mul_msg db "Multiplication: ", 0
+    div_msg db "Division: ", 0
+
+section .bss
+    res resb 20         ; Buffer for results
+
+section .text
+    global _start
+
+_start:
+    ; Load numbers into registers
+    mov al, [num1]      ; Load num1 into AL
+    mov bl, [num2]      ; Load num2 into BL
+
+    ; Addition
+    add al, bl          ; AL = num1 + num2
+    call print_result
+    call check_even_odd
+
+    ; Subtraction
+    mov al, [num1]      ; Reload num1
+    sub al, bl          ; AL = num1 - num2
+    call print_result
+    call check_even_odd
+
+    ; Multiplication
+    mov al, [num1]      ; Reload num1
+    mul bl              ; AL = num1 * num2 (result in AL)
+    call print_result
+    call check_even_odd
+
+    ; Division
+    mov al, [num1]      ; Reload num1
+    xor ah, ah          ; Clear AH for division
+    div bl              ; AL = num1 / num2 (result in AL)
+    call print_result
+    call check_even_odd
+
+    ; Exit program
+    mov eax, 1          ; syscall: exit
+    xor ebx, ebx        ; status: 0
+    int 0x80
+
+print_result:
+    ; Convert AL to string and print
+    ; (This is a simplified version; in a real program, you'd need to convert AL to a string)
+    mov [res], al
+    ; Print the result (you would typically use a syscall to print)
+    ; For simplicity, we will just return
+    ret
+
+check_even_odd:
+    ; Check if the result in AL is even or odd
+    test al, 1          ; Check the least significant bit
+    jz .even            ; Jump if zero (even)
+    ; If odd
+    mov eax, odd_msg
+    jmp .done
+
+.even:
+    mov eax, even_msg
+
+.done:
+    ; Print the message (you would typically use a syscall to print)
+    ; For simplicity, we will just return
+    ret
