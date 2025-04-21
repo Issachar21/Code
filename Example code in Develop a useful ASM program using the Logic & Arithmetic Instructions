@@ -11,8 +11,7 @@ section .data
     div_msg db "Division: ", 0
 
 section .bss
-    res resb 4          ; Buffer for 1–3 digit result
-
+    res resb 4          
 section .text
     global _start
 
@@ -21,7 +20,7 @@ _start:
     mov al, [num1]
     mov bl, [num2]
     add al, bl
-    movzx eax, al       ; Move result to eax
+    movzx eax, al       
     push eax
     mov eax, add_msg
     call print_string
@@ -42,7 +41,7 @@ _start:
 
     ; MULTIPLICATION
     mov al, [num1]
-    mul bl              ; AL = AL * BL
+    mul bl              
     movzx eax, al
     push eax
     mov eax, mul_msg
@@ -53,8 +52,8 @@ _start:
 
     ; DIVISION
     mov al, [num1]
-    xor ah, ah          ; Clear AH for division
-    div bl              ; AL = AL / BL
+    xor ah, ah          
+    div bl             
     movzx eax, al
     push eax
     mov eax, div_msg
@@ -67,13 +66,9 @@ _start:
     mov eax, 1
     xor ebx, ebx
     int 0x80
-
-; ---------------------
-; Print Number in EAX
-; ---------------------
 print_number:
-    mov ecx, res + 3    ; Point to end of buffer
-    mov byte [ecx], 10  ; Newline
+    mov ecx, res + 3    
+    mov byte [ecx], 10  
     dec ecx
 
     mov ebx, 10
@@ -86,19 +81,15 @@ print_number:
     test eax, eax
     jnz .convert
 
-    inc ecx             ; Point to first digit
+    inc ecx             
     mov edx, res + 4
     sub edx, ecx
 
-    mov eax, 4          ; sys_write
-    mov ebx, 1          ; stdout
+    mov eax, 4          
+    mov ebx, 1          
     mov ecx, ecx
     int 0x80
     ret
-
-; ---------------------
-; Print string at EAX
-; ---------------------
 print_string:
     mov ecx, eax
     mov edx, 0
@@ -112,10 +103,6 @@ print_string:
     mov ebx, 1
     int 0x80
     ret
-
-; ---------------------
-; Check Even or Odd
-; ---------------------
 check_even_odd:
     test al, 1
     jz .even
