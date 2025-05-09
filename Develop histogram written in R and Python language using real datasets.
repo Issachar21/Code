@@ -1,0 +1,14 @@
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+titanic = sns.load_dataset('titanic')
+
+titanic_clean = titanic.dropna(subset=['age'])
+
+plt.figure(figsize=(10, 6))
+plt.hist(titanic_clean['age'], bins=20, color='skyblue', edgecolor='black')
+plt.title('Histogram of Passenger Age (Titanic Dataset)')
+plt.xlabel('Age')
+plt.ylabel('Number of Passengers')
+plt.grid(True)
+plt.show()
